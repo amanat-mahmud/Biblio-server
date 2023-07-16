@@ -58,7 +58,7 @@ const run = async () => {
       const title = req.body.title;
       const author = req.body.author;
       const genre = req.body.genre;
-      const date = new Date();
+      const date = req.body.date;
       const updatedDoc = {
         $set:{
             title:title,
@@ -67,27 +67,27 @@ const run = async () => {
             date:date
         }
     }
-      const user = await userCollection.updateOne(filter,updatedDoc,options);
-      res.send(user);
+      const book = await bookCollection.updateOne(filter,updatedDoc,options);
+      res.send(book);
   })
 
     app.post('/comment/:id', async (req, res) => {
-      const productId = req.params.id;
+      const bookId = req.params.id;
+      console.log(bookId);
       const comment = req.body.comment;
-
-      console.log(productId);
+      console.log(bookId);
       console.log(comment);
 
-      const result = await productCollection.updateOne(
-        { _id: ObjectId(productId) },
+      const result = await bookCollection.updateOne(
+        { _id: ObjectId(bookId) },
         { $push: { comments: comment } }
       );
 
       console.log(result);
 
       if (result.modifiedCount !== 1) {
-        console.error('Product not found or comment not added');
-        res.json({ error: 'Product not found or comment not added' });
+        console.error('Book not found or comment not added');
+        res.json({ error: 'Book not found or comment not added' });
         return;
       }
 
@@ -96,39 +96,39 @@ const run = async () => {
     });
 
     app.get('/comment/:id', async (req, res) => {
-      const productId = req.params.id;
-
-      const result = await productCollection.findOne(
-        { _id: ObjectId(productId) },
+      const bookId = req.params.id;
+      console.log("get",bookId);
+      const result = await bookCollection.findOne(
+        { _id: ObjectId(bookId) },
         { projection: { _id: 0, comments: 1 } }
       );
 
       if (result) {
         res.json(result);
       } else {
-        res.status(404).json({ error: 'Product not found' });
+        res.status(404).json({ error: 'Book not found' });
       }
     });
 
-    app.post('/user', async (req, res) => {
-      const user = req.body;
+    // app.post('/user', async (req, res) => {
+    //   const user = req.body;
 
-      const result = await userCollection.insertOne(user);
+    //   const result = await userCollection.insertOne(user);
 
-      res.send(result);
-    });
+    //   res.send(result);
+    // });
 
-    app.get('/user/:email', async (req, res) => {
-      const email = req.params.email;
+    // app.get('/user/:email', async (req, res) => {
+    //   const email = req.params.email;
 
-      const result = await userCollection.findOne({ email });
+    //   const result = await userCollection.findOne({ email });
 
-      if (result?.email) {
-        return res.send({ status: true, data: result });
-      }
+    //   if (result?.email) {
+    //     return res.send({ status: true, data: result });
+    //   }
 
-      res.send({ status: false });
-    });
+    //   res.send({ status: false });
+    // });
   } finally {
   }
 };
