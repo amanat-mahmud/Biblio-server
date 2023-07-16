@@ -51,6 +51,26 @@ const run = async () => {
       res.send(result);
     });
 
+    app.put('/book/:id',async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id:ObjectId(id)};
+      const options = { upsert: true };
+      const title = req.body.title;
+      const author = req.body.author;
+      const genre = req.body.genre;
+      const date = new Date();
+      const updatedDoc = {
+        $set:{
+            title:title,
+            author:author,
+            genre:genre,
+            date:date
+        }
+    }
+      const user = await userCollection.updateOne(filter,updatedDoc,options);
+      res.send(user);
+  })
+
     app.post('/comment/:id', async (req, res) => {
       const productId = req.params.id;
       const comment = req.body.comment;
