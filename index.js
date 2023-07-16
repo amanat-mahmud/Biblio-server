@@ -25,15 +25,17 @@ const run = async () => {
     app.get('/books', async (req, res) => {
       const cursor = bookCollection.find({});
       const book = await cursor.toArray();
-
       res.send({ status: true, data: book });
     });
     app.get('/books/:email', async (req, res) => {
       const email = req.params.email;
-      console.log(email);
       const cursor = bookCollection.find({user:email});
       const book = await cursor.toArray();
-      console.log(book);
+      res.send({ status: true, data: book });
+    });
+    app.get('/book/:id', async (req, res) => {
+      const id = req.params.id;
+      const book = await bookCollection.findOne({_id:ObjectId(id)});
       res.send({ status: true, data: book });
     });
 
